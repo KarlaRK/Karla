@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SK Glamour Nails</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background-image:url("https://images.unsplash.com/photo-1604654894610-df63bc536371");
+background-size:cover;
+background-attachment:fixed;
+}
+
+header{
+background:white;
+color:#d81b60;
+text-align:center;
+padding:20px;
+}
+
+nav{
+background:#d81b60;
+text-align:center;
+padding:10px;
+}
+
+nav button{
+background:none;
+border:none;
+color:white;
+margin:10px;
+font-size:16px;
+cursor:pointer;
+}
+
+section{
+display:none;
+padding:30px;
+}
+
+.activo{
+display:block;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+max-width:900px;
+margin:auto;
+}
+
+.servicios{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.servicio{
+background:white;
+padding:15px;
+border-radius:10px;
+width:200px;
+text-align:center;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.servicio img{
+width:100%;
+border-radius:10px;
+}
+
+input,select{
+padding:8px;
+margin:5px;
+}
+
+button{
+background:white;
+color:#d81b60;
+border:1px solid #d81b60;
+padding:8px 15px;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #ffc0cb;
+padding:8px;
+text-align:center;
+}
+
+th{
+background:#ffc0cb;
+color:#d81b60;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+<img src="kks.jpg" width="200">
+</header>
+
+<nav>
+<button onclick="mostrar('servicios')">Servicios</button>
+<button onclick="mostrar('materiales')">Materiales Utilizados</button>
+<button onclick="mostrar('clientes')">Clientes</button>
+<button onclick="mostrar('citas')">Citas</button>
+<button onclick="mostrar('pagos')">Pagos</button>
+<button onclick="mostrar('reportes')">Reportes</button>
+<button onclick="mostrar('contacto')">Contáctanos</button>
+<button onclick="mostrar('login')">Panel Manicurista</button>
+</nav>
+
+<section id="servicios" class="activo">
+<div class="card">
+
+<h2>Servicios</h2>
+
+<div class="servicios">
+
+<div class="servicio">
+<img src="https://images.unsplash.com/photo-1519014816548-bf5fe059798b">
+<h3>Manicure</h3>
+</div>
+
+<div class="servicio">
+<img src="https://sevilla.abc.es/estilo/bulevarsur/wp-content/uploads/sites/14/2018/07/Que-es-la-pedicura-spa.jpg">
+<h3>Pedicure</h3>
+</div>
+
+<div class="servicio">
+<img src="https://i.pinimg.com/474x/8c/d6/d4/8cd6d49a64caf18eddba32beb0668cd3.jpg">
+<h3>Uñas Acrílicas</h3>
+</div>
+
+<div class="servicio">
+<img src="https://images.unsplash.com/photo-1604654894610-df63bc536371">
+<h3>Decoración</h3>
+</div>
+
+</div>
+</div>
+</section>
+
+<section id="clientes">
+<div class="card">
+
+<h2>Clientes</h2>
+
+<input id="nombreCliente" placeholder="Nombre">
+<input id="telefonoCliente" placeholder="Teléfono">
+
+<button onclick="agregarCliente()">Agregar</button>
+
+<table>
+<tr>
+<th>Nombre</th>
+<th>Teléfono</th>
+<th>Eliminar</th>
+</tr>
+<tbody id="tablaClientes"></tbody>
+</table>
+
+</div>
+</section>
+
+<section id="materiales">
+<div class="card">
+
+<h2>Materiales Utilizados</h2>
+
+<div class="servicios">
+
+<div class="servicio"><h3>Acrílico</h3></div>
+<div class="servicio"><h3>Gel</h3></div>
+<div class="servicio"><h3>Polygel</h3></div>
+<div class="servicio"><h3>Tips o Moldes</h3></div>
+<div class="servicio"><h3>Limas</h3></div>
+<div class="servicio"><h3>Preparadores</h3></div>
+<div class="servicio"><h3>Lámpara UV / LED</h3></div>
+
+</div>
+</div>
+</section>
+
+<section id="citas">
+<div class="card">
+
+<h2>Registrar Cita</h2>
+
+<input id="clienteCita" placeholder="Cliente">
+<input id="servicioCita" placeholder="Servicio">
+
+<input type="date" id="fechaCita">
+<input type="time" id="horaCita">
+
+<select id="lugarCita">
+<option>SK Glamour Nails</option>
+<option>Negocio Colaborador</option>
+</select>
+
+<button onclick="agregarCita()">Registrar</button>
+
+<table>
+<tr>
+<th>Cliente</th>
+<th>Servicio</th>
+<th>Fecha</th>
+<th>Hora</th>
+<th>Lugar</th>
+<th>Eliminar</th>
+</tr>
+<tbody id="tablaCitas"></tbody>
+</table>
+
+</div>
+</section>
+
+<section id="pagos">
+<div class="card">
+
+<h2>Pagos</h2>
+
+<input id="clientePago" placeholder="Cliente">
+<input id="montoPago" placeholder="Monto">
+
+<select id="tipoIngreso">
+<option>SK Glamour Nails</option>
+<option>Negocio Colaborador</option>
+</select>
+
+<button onclick="agregarPago()">Registrar</button>
+
+<table>
+<tr>
+<th>Cliente</th>
+<th>Monto</th>
+<th>Tipo</th>
+<th>Eliminar</th>
+</tr>
+<tbody id="tablaPagos"></tbody>
+</table>
+
+</div>
+</section>
+
+<section id="reportes">
+<div class="card">
+
+<h2>Reportes</h2>
+
+<p>Total Clientes: <span id="totalClientes">0</span></p>
+<p>Total Citas: <span id="totalCitas">0</span></p>
+
+</div>
+</section>
+
+<section id="login">
+<div class="card">
+
+<h2>Acceso Manicurista</h2>
+
+<input id="usuario" placeholder="Usuario">
+<input type="password" id="clave" placeholder="Contraseña">
+
+<button onclick="login()">Entrar</button>
+
+</div>
+</section>
+
+<section id="inventario">
+<div class="card">
+
+<h2>Inventario</h2>
+
+<input id="productoInventario" placeholder="Producto">
+<input id="cantidadInventario" placeholder="Cantidad">
+
+<button onclick="agregarInventario()">Agregar</button>
+
+<table>
+<tr>
+<th>Producto</th>
+<th>Cantidad</th>
+<th>Eliminar</th>
+</tr>
+<tbody id="tablaInventario"></tbody>
+</table>
+
+</div>
+</section>
+
+<section id="contacto">
+<div class="card">
+
+<h2>Contáctanos</h2>
+
+<p>WhatsApp: 3148370303</p>
+<p>WhatsApp: 3052094533</p>
+<p>Correo: Skglamournls@email.com</p>
+<p>Instagram: @skglamour_nails</p>
+
+</div>
+</section>
+
+<script>
+
+let clientes=JSON.parse(localStorage.getItem("clientes"))||[]
+let citas=JSON.parse(localStorage.getItem("citas"))||[]
+let pagos=JSON.parse(localStorage.getItem("pagos"))||[]
+let inventario=JSON.parse(localStorage.getItem("inventario"))||[]
+
+function mostrar(id){
+document.querySelectorAll("section").forEach(s=>{
+s.classList.remove("activo")
+})
+document.getElementById(id).classList.add("activo")
+}
+
+function guardar(){
+localStorage.setItem("clientes",JSON.stringify(clientes))
+localStorage.setItem("citas",JSON.stringify(citas))
+localStorage.setItem("pagos",JSON.stringify(pagos))
+localStorage.setItem("inventario",JSON.stringify(inventario))
+}
+
+function agregarCliente(){
+let nombre=document.getElementById("nombreCliente").value
+let telefono=document.getElementById("telefonoCliente").value
+clientes.push({nombre,telefono})
+guardar()
+render()
+}
+
+function agregarCita(){
+
+let cliente=document.getElementById("clienteCita").value
+let servicio=document.getElementById("servicioCita").value
+let fecha=document.getElementById("fechaCita").value
+let hora=document.getElementById("horaCita").value
+let lugar=document.getElementById("lugarCita").value
+
+citas.push({cliente,servicio,fecha,hora,lugar})
+
+guardar()
+render()
+}
+
+function agregarPago(){
+let cliente=document.getElementById("clientePago").value
+let monto=parseInt(document.getElementById("montoPago").value)
+let tipo=document.getElementById("tipoIngreso").value
+pagos.push({cliente,monto,tipo})
+guardar()
+render()
+}
+
+function agregarInventario(){
+let producto=document.getElementById("productoInventario").value
+let cantidad=document.getElementById("cantidadInventario").value
+inventario.push({producto,cantidad})
+guardar()
+render()
+}
+
+function eliminar(tipo,index){
+if(tipo=="cliente")clientes.splice(index,1)
+if(tipo=="cita")citas.splice(index,1)
+if(tipo=="pago")pagos.splice(index,1)
+if(tipo=="inventario")inventario.splice(index,1)
+guardar()
+render()
+}
+
+function render(){
+
+let tc=document.getElementById("tablaClientes")
+tc.innerHTML=""
+clientes.forEach((c,i)=>{
+tc.innerHTML+=`<tr>
+<td>${c.nombre}</td>
+<td>${c.telefono}</td>
+<td><button onclick="eliminar('cliente',${i})">Eliminar</button></td>
+</tr>`
+})
+
+let tci=document.getElementById("tablaCitas")
+tci.innerHTML=""
+citas.forEach((c,i)=>{
+tci.innerHTML+=`<tr>
+<td>${c.cliente}</td>
+<td>${c.servicio}</td>
+<td>${c.fecha}</td>
+<td>${c.hora}</td>
+<td>${c.lugar}</td>
+<td><button onclick="eliminar('cita',${i})">Eliminar</button></td>
+</tr>`
+})
+
+document.getElementById("totalClientes").innerText=clientes.length
+document.getElementById("totalCitas").innerText=citas.length
+
+}
+
+function login(){
+
+let usuario=document.getElementById("usuario").value
+let clave=document.getElementById("clave").value
+
+if(usuario=="manicurista" && clave=="1234"){
+alert("Bienvenida Manicurista")
+mostrar("inventario")
+}else{
+alert("Datos incorrectos")
+}
+
+}
+
+render()
+
+</script>
+
+</body>
+</html>
