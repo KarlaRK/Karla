@@ -3,109 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>SK Glamour Nails</title>
-
-<style>
-
-body{
-font-family:Arial;
-margin:0;
-background-image:url("https://images.unsplash.com/photo-1604654894610-df63bc536371");
-background-size:cover;
-background-attachment:fixed;
-}
-
-header{
-background:white;
-color:#d81b60;
-text-align:center;
-padding:20px;
-}
-
-nav{
-background:#d81b60;
-text-align:center;
-padding:10px;
-}
-
-nav button{
-background:none;
-border:none;
-color:white;
-margin:10px;
-font-size:16px;
-cursor:pointer;
-}
-
-section{
-display:none;
-padding:30px;
-}
-
-.activo{
-display:block;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-max-width:900px;
-margin:auto;
-}
-
-.servicios{
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-justify-content:center;
-}
-
-.servicio{
-background:white;
-padding:15px;
-border-radius:10px;
-width:200px;
-text-align:center;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-}
-
-.servicio img{
-width:100%;
-border-radius:10px;
-}
-
-input,select{
-padding:8px;
-margin:5px;
-}
-
-button{
-background:white;
-color:#d81b60;
-border:1px solid #d81b60;
-padding:8px 15px;
-cursor:pointer;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:10px;
-}
-
-th,td{
-border:1px solid #ffc0cb;
-padding:8px;
-text-align:center;
-}
-
-th{
-background:#ffc0cb;
-color:#d81b60;
-}
-
-</style>
-
+<link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
@@ -119,8 +17,8 @@ color:#d81b60;
 <button onclick="mostrar('materiales')">Materiales Utilizados</button>
 <button onclick="mostrar('clientes')">Clientes</button>
 <button onclick="mostrar('citas')">Citas</button>
-<button onclick="mostrar('pagos')">Pagos</button>
-<button onclick="mostrar('reportes')">Reportes</button>
+<button id="btnPagos" onclick="mostrar('pagos')">Pagos</button>
+<button id="btnReportes" onclick="mostrar('reportes')">Reportes</button>
 <button onclick="mostrar('contacto')">Contáctanos</button>
 <button onclick="mostrar('login')">Panel Manicurista</button>
 </nav>
@@ -203,7 +101,12 @@ color:#d81b60;
 <h2>Registrar Cita</h2>
 
 <input id="clienteCita" placeholder="Cliente">
-<input id="servicioCita" placeholder="Servicio">
+<select id="servicioCita">
+    <option>Manicure</option>
+    <option>Pedicure</option>
+    <option>Uñas Acrilicas</option>
+    <option>Decoracion</option>
+</select>
 
 <input type="date" id="fechaCita">
 <input type="time" id="horaCita">
@@ -236,7 +139,7 @@ color:#d81b60;
 <h2>Pagos</h2>
 
 <input id="clientePago" placeholder="Cliente">
-<input id="montoPago" placeholder="Monto">
+<input id="montoPago" placeholder="Monto" type="number">
 
 <select id="tipoIngreso">
 <option>SK Glamour Nails</option>
@@ -288,7 +191,7 @@ color:#d81b60;
 <h2>Inventario</h2>
 
 <input id="productoInventario" placeholder="Producto">
-<input id="cantidadInventario" placeholder="Cantidad">
+<input id="cantidadInventario" placeholder="Cantidad" type="number">
 
 <button onclick="agregarInventario()">Agregar</button>
 
@@ -317,122 +220,7 @@ color:#d81b60;
 </div>
 </section>
 
-<script>
-
-let clientes=JSON.parse(localStorage.getItem("clientes"))||[]
-let citas=JSON.parse(localStorage.getItem("citas"))||[]
-let pagos=JSON.parse(localStorage.getItem("pagos"))||[]
-let inventario=JSON.parse(localStorage.getItem("inventario"))||[]
-
-function mostrar(id){
-document.querySelectorAll("section").forEach(s=>{
-s.classList.remove("activo")
-})
-document.getElementById(id).classList.add("activo")
-}
-
-function guardar(){
-localStorage.setItem("clientes",JSON.stringify(clientes))
-localStorage.setItem("citas",JSON.stringify(citas))
-localStorage.setItem("pagos",JSON.stringify(pagos))
-localStorage.setItem("inventario",JSON.stringify(inventario))
-}
-
-function agregarCliente(){
-let nombre=document.getElementById("nombreCliente").value
-let telefono=document.getElementById("telefonoCliente").value
-clientes.push({nombre,telefono})
-guardar()
-render()
-}
-
-function agregarCita(){
-
-let cliente=document.getElementById("clienteCita").value
-let servicio=document.getElementById("servicioCita").value
-let fecha=document.getElementById("fechaCita").value
-let hora=document.getElementById("horaCita").value
-let lugar=document.getElementById("lugarCita").value
-
-citas.push({cliente,servicio,fecha,hora,lugar})
-
-guardar()
-render()
-}
-
-function agregarPago(){
-let cliente=document.getElementById("clientePago").value
-let monto=parseInt(document.getElementById("montoPago").value)
-let tipo=document.getElementById("tipoIngreso").value
-pagos.push({cliente,monto,tipo})
-guardar()
-render()
-}
-
-function agregarInventario(){
-let producto=document.getElementById("productoInventario").value
-let cantidad=document.getElementById("cantidadInventario").value
-inventario.push({producto,cantidad})
-guardar()
-render()
-}
-
-function eliminar(tipo,index){
-if(tipo=="cliente")clientes.splice(index,1)
-if(tipo=="cita")citas.splice(index,1)
-if(tipo=="pago")pagos.splice(index,1)
-if(tipo=="inventario")inventario.splice(index,1)
-guardar()
-render()
-}
-
-function render(){
-
-let tc=document.getElementById("tablaClientes")
-tc.innerHTML=""
-clientes.forEach((c,i)=>{
-tc.innerHTML+=`<tr>
-<td>${c.nombre}</td>
-<td>${c.telefono}</td>
-<td><button onclick="eliminar('cliente',${i})">Eliminar</button></td>
-</tr>`
-})
-
-let tci=document.getElementById("tablaCitas")
-tci.innerHTML=""
-citas.forEach((c,i)=>{
-tci.innerHTML+=`<tr>
-<td>${c.cliente}</td>
-<td>${c.servicio}</td>
-<td>${c.fecha}</td>
-<td>${c.hora}</td>
-<td>${c.lugar}</td>
-<td><button onclick="eliminar('cita',${i})">Eliminar</button></td>
-</tr>`
-})
-
-document.getElementById("totalClientes").innerText=clientes.length
-document.getElementById("totalCitas").innerText=citas.length
-
-}
-
-function login(){
-
-let usuario=document.getElementById("usuario").value
-let clave=document.getElementById("clave").value
-
-if(usuario=="manicurista" && clave=="1234"){
-alert("Bienvenida Manicurista")
-mostrar("inventario")
-}else{
-alert("Datos incorrectos")
-}
-
-}
-
-render()
-
-</script>
+<script src="js/scripts.js"></script>
 
 </body>
 </html>
