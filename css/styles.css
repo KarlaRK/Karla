@@ -4,7 +4,7 @@ margin:0;
 background-image:url("https://images.unsplash.com/photo-1604654894610-df63bc536371");
 background-size:cover;
 background-attachment:fixed;
-background-color: #fcd3da;
+background-color: #fcd3dafa;
 }
 
 header{
@@ -32,8 +32,7 @@ cursor:pointer;
 section{
 display:none;
 padding:30px;
-background-color: rgba(255, 228, 233, 0.92);
-min-height: calc(100vh - 130px);
+background-color: #ffe4e9;
 }
 
 .activo{
@@ -89,12 +88,12 @@ margin-top:10px;
 }
 
 th,td{
-border:1px solid #ffc0f7;
+border:1px solid #ffc0cb;
 padding:8px;
 text-align:center;
 }
 
 th{
-background:#f34dae;
-color:#f0edee;
+background:#ffc0cb;
+color:#d81b60;
 }

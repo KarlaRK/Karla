@@ -2,13 +2,17 @@ let clientes = JSON.parse(localStorage.getItem("clientes")) || []
 let citas = JSON.parse(localStorage.getItem("citas")) || []
 let pagos = JSON.parse(localStorage.getItem("pagos")) || []
 let inventario = JSON.parse(localStorage.getItem("inventario")) || []
-let manicuristaLogueada = false
 
 function mostrar(id) {
-  document.querySelectorAll("section").forEach(s => {
-    s.classList.remove("activo")
-  })
+  document.querySelectorAll("section").forEach(s => s.classList.remove("activo"))
   document.getElementById(id).classList.add("activo")
+}
+
+// Sub-navegación dentro del panel manicurista
+function mostrarPanel(id) {
+  document.getElementById("inventarioPanel").style.display = "none"
+  document.getElementById("pagosPanel").style.display = "none"
+  document.getElementById(id).style.display = "block"
 }
 
 function guardar() {
@@ -18,24 +22,36 @@ function guardar() {
   localStorage.setItem("inventario", JSON.stringify(inventario))
 }
 
+// ── CLIENTES ──────────────────────────────────────────────
 function agregarCliente() {
-  let nombre = document.getElementById("nombreCliente").value
-  let telefono = document.getElementById("telefonoCliente").value
-  if (!nombre || !telefono) return
-  clientes.push({ nombre, telefono })
+  let nombre = document.getElementById("nombreCliente").value.trim()
+  let telefono = document.getElementById("telefonoCliente").value.trim()
+  let lugar = document.getElementById("lugarCliente").value
+
+  if (!nombre || !telefono || !lugar) {
+    alert("Por favor completa todos los campos del cliente.")
+    return
+  }
+  clientes.push({ nombre, telefono, lugar })
   document.getElementById("nombreCliente").value = ""
   document.getElementById("telefonoCliente").value = ""
+  document.getElementById("lugarCliente").value = ""
   guardar()
   render()
 }
 
+// ── CITAS ─────────────────────────────────────────────────
 function agregarCita() {
-  let cliente = document.getElementById("clienteCita").value
+  let cliente = document.getElementById("clienteCita").value.trim()
   let servicio = document.getElementById("servicioCita").value
   let fecha = document.getElementById("fechaCita").value
   let hora = document.getElementById("horaCita").value
   let lugar = document.getElementById("lugarCita").value
-  if (!cliente || !fecha || !hora) return
+
+  if (!cliente || !fecha || !hora) {
+    alert("Por favor completa todos los campos de la cita.")
+    return
+  }
   citas.push({ cliente, servicio, fecha, hora, lugar })
   document.getElementById("clienteCita").value = ""
   document.getElementById("fechaCita").value = ""
@@ -44,22 +60,32 @@ function agregarCita() {
   render()
 }
 
-function agregarPago() {
-  let cliente = document.getElementById("clientePago").value
-  let monto = document.getElementById("montoPago").value
-  let tipo = document.getElementById("tipoIngreso").value
-  if (!cliente || !monto) return
-  pagos.push({ cliente, monto: parseInt(monto), tipo })
-  document.getElementById("clientePago").value = ""
-  document.getElementById("montoPago").value = ""
+// ── PAGOS (desde panel manicurista) ───────────────────────
+function agregarPago2() {
+  let cliente = document.getElementById("clientePago2").value.trim()
+  let monto = parseFloat(document.getElementById("montoPago2").value)
+  let tipo = document.getElementById("tipoIngreso2").value
+
+  if (!cliente || isNaN(monto)) {
+    alert("Por favor completa todos los campos del pago.")
+    return
+  }
+  pagos.push({ cliente, monto, tipo })
+  document.getElementById("clientePago2").value = ""
+  document.getElementById("montoPago2").value = ""
   guardar()
   render()
 }
 
+// ── INVENTARIO ────────────────────────────────────────────
 function agregarInventario() {
-  let producto = document.getElementById("productoInventario").value
-  let cantidad = document.getElementById("cantidadInventario").value
-  if (!producto || !cantidad) return
+  let producto = document.getElementById("productoInventario").value.trim()
+  let cantidad = document.getElementById("cantidadInventario").value.trim()
+
+  if (!producto || !cantidad) {
+    alert("Por favor completa todos los campos del inventario.")
+    return
+  }
   inventario.push({ producto, cantidad })
   document.getElementById("productoInventario").value = ""
   document.getElementById("cantidadInventario").value = ""
@@ -67,25 +93,28 @@ function agregarInventario() {
   render()
 }
 
+// ── ELIMINAR ──────────────────────────────────────────────
 function eliminar(tipo, index) {
-  if (!manicuristaLogueada) return
-  if (tipo == "cliente") clientes.splice(index, 1)
-  if (tipo == "cita") citas.splice(index, 1)
-  if (tipo == "pago") pagos.splice(index, 1)
-  if (tipo == "inventario") inventario.splice(index, 1)
+  if (tipo === "cliente") clientes.splice(index, 1)
+  if (tipo === "cita") citas.splice(index, 1)
+  if (tipo === "pago") pagos.splice(index, 1)
+  if (tipo === "inventario") inventario.splice(index, 1)
   guardar()
   render()
 }
 
+// ── RENDER ────────────────────────────────────────────────
 function render() {
-  // Clientes
+
+  // Clientes — ahora con columna "Lugar del Servicio"
   let tc = document.getElementById("tablaClientes")
   tc.innerHTML = ""
   clientes.forEach((c, i) => {
     tc.innerHTML += `<tr>
       <td>${c.nombre}</td>
       <td>${c.telefono}</td>
-      ${manicuristaLogueada ? `<td><button onclick="eliminar('cliente',${i})">Eliminar</button></td>` : '<td>—</td>'}
+      <td>${c.lugar || "—"}</td>
+      <td><button onclick="eliminar('cliente',${i})">Eliminar</button></td>
     </tr>`
   })
 
@@ -99,21 +128,23 @@ function render() {
       <td>${c.fecha}</td>
       <td>${c.hora}</td>
       <td>${c.lugar}</td>
-      ${manicuristaLogueada ? `<td><button onclick="eliminar('cita',${i})">Eliminar</button></td>` : '<td>—</td>'}
+      <td><button onclick="eliminar('cita',${i})">Eliminar</button></td>
     </tr>`
   })
 
-  // Pagos
-  let tp = document.getElementById("tablaPagos")
-  tp.innerHTML = ""
-  pagos.forEach((p, i) => {
-    tp.innerHTML += `<tr>
-      <td>${p.cliente}</td>
-      <td>$${p.monto}</td>
-      <td>${p.tipo}</td>
-      <td><button onclick="eliminar('pago',${i})">Eliminar</button></td>
-    </tr>`
-  })
+  // Pagos (panel manicurista) — con columna "Realizado por"
+  let tp2 = document.getElementById("tablaPagos2")
+  if (tp2) {
+    tp2.innerHTML = ""
+    pagos.forEach((p, i) => {
+      tp2.innerHTML += `<tr>
+        <td>${p.cliente}</td>
+        <td>$${p.monto.toLocaleString()}</td>
+        <td>${p.tipo}</td>
+        <td><button onclick="eliminar('pago',${i})">Eliminar</button></td>
+      </tr>`
+    })
+  }
 
   // Inventario
   let ti = document.getElementById("tablaInventario")
@@ -131,25 +162,18 @@ function render() {
   document.getElementById("totalCitas").innerText = citas.length
 }
 
-function actualizarBotonesNav() {
-  document.getElementById("btnPagos").style.display = manicuristaLogueada ? "inline-block" : "none"
-  document.getElementById("btnReportes").style.display = manicuristaLogueada ? "inline-block" : "none"
-}
-
+// ── LOGIN ─────────────────────────────────────────────────
 function login() {
   let usuario = document.getElementById("usuario").value
   let clave = document.getElementById("clave").value
 
-  if (usuario == "manicurista" && clave == "1234") {
-    manicuristaLogueada = true
-    alert("Bienvenida Manicurista")
-    actualizarBotonesNav()
-    render()
-    mostrar("inventario")
+  if (usuario === "manicurista" && clave === "1234") {
+    alert("¡Bienvenida Manicurista! 💅")
+    mostrar("panelManicurista")
+    mostrarPanel("inventarioPanel")
   } else {
     alert("Datos incorrectos")
   }
 }
 
-actualizarBotonesNav()
 render()

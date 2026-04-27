@@ -17,210 +17,215 @@
 <button onclick="mostrar('materiales')">Materiales Utilizados</button>
 <button onclick="mostrar('clientes')">Clientes</button>
 <button onclick="mostrar('citas')">Citas</button>
-<button id="btnPagos" onclick="mostrar('pagos')">Pagos</button>
-<button id="btnReportes" onclick="mostrar('reportes')">Reportes</button>
+<button onclick="mostrar('reportes')">Reportes</button>
 <button onclick="mostrar('contacto')">Contáctanos</button>
 <button onclick="mostrar('login')">Panel Manicurista</button>
 </nav>
 
 <section id="servicios" class="activo">
 <div class="card">
-
 <h2>Servicios</h2>
-
 <div class="servicios">
-
-<div class="servicio">
-<img src="https://images.unsplash.com/photo-1519014816548-bf5fe059798b">
-<h3>Manicure</h3>
-</div>
-
-<div class="servicio">
-<img src="https://sevilla.abc.es/estilo/bulevarsur/wp-content/uploads/sites/14/2018/07/Que-es-la-pedicura-spa.jpg">
-<h3>Pedicure</h3>
-</div>
-
-<div class="servicio">
-<img src="https://i.pinimg.com/474x/8c/d6/d4/8cd6d49a64caf18eddba32beb0668cd3.jpg">
-<h3>Uñas Acrílicas</h3>
-</div>
-
-<div class="servicio">
-<img src="https://images.unsplash.com/photo-1604654894610-df63bc536371">
-<h3>Decoración</h3>
-</div>
-
+  <div class="servicio">
+    <img src="https://images.unsplash.com/photo-1519014816548-bf5fe059798b">
+    <h3>Manicure</h3>
+  </div>
+  <div class="servicio">
+    <img src="https://sevilla.abc.es/estilo/bulevarsur/wp-content/uploads/sites/14/2018/07/Que-es-la-pedicura-spa.jpg">
+    <h3>Pedicure</h3>
+  </div>
+  <div class="servicio">
+    <img src="https://i.pinimg.com/474x/8c/d6/d4/8cd6d49a64caf18eddba32beb0668cd3.jpg">
+    <h3>Uñas Acrílicas</h3>
+  </div>
+  <div class="servicio">
+    <img src="https://images.unsplash.com/photo-1604654894610-df63bc536371">
+    <h3>Decoración</h3>
+  </div>
 </div>
 </div>
 </section>
 
 <section id="clientes">
 <div class="card">
-
 <h2>Clientes</h2>
 
 <input id="nombreCliente" placeholder="Nombre">
 <input id="telefonoCliente" placeholder="Teléfono">
+<select id="lugarCliente">
+  <option value="">-- Lugar del servicio --</option>
+  <option>SK Glamour Nails</option>
+  <option>Negocio Colaborador</option>
+</select>
 
 <button onclick="agregarCliente()">Agregar</button>
 
 <table>
 <tr>
-<th>Nombre</th>
-<th>Teléfono</th>
-<th>Eliminar</th>
+  <th>Nombre</th>
+  <th>Teléfono</th>
+  <th>Lugar del Servicio</th>
+  <th>Eliminar</th>
 </tr>
 <tbody id="tablaClientes"></tbody>
 </table>
-
 </div>
 </section>
 
 <section id="materiales">
 <div class="card">
-
 <h2>Materiales Utilizados</h2>
-
 <div class="servicios">
-
-<div class="servicio"><h3>Acrílico</h3></div>
-<div class="servicio"><h3>Gel</h3></div>
-<div class="servicio"><h3>Polygel</h3></div>
-<div class="servicio"><h3>Tips o Moldes</h3></div>
-<div class="servicio"><h3>Limas</h3></div>
-<div class="servicio"><h3>Preparadores</h3></div>
-<div class="servicio"><h3>Lámpara UV / LED</h3></div>
-
+  <div class="servicio"><h3>Acrílico</h3></div>
+  <div class="servicio"><h3>Gel</h3></div>
+  <div class="servicio"><h3>Polygel</h3></div>
+  <div class="servicio"><h3>Tips o Moldes</h3></div>
+  <div class="servicio"><h3>Limas</h3></div>
+  <div class="servicio"><h3>Preparadores</h3></div>
+  <div class="servicio"><h3>Lámpara UV / LED</h3></div>
 </div>
 </div>
 </section>
 
 <section id="citas">
 <div class="card">
-
 <h2>Registrar Cita</h2>
 
 <input id="clienteCita" placeholder="Cliente">
 <select id="servicioCita">
-    <option>Manicure</option>
-    <option>Pedicure</option>
-    <option>Uñas Acrilicas</option>
-    <option>Decoracion</option>
+  <option>Manicure</option>
+  <option>Pedicure</option>
+  <option>Uñas Acrilicas</option>
+  <option>Decoracion</option>
 </select>
-
 <input type="date" id="fechaCita">
 <input type="time" id="horaCita">
-
 <select id="lugarCita">
-<option>SK Glamour Nails</option>
-<option>Negocio Colaborador</option>
+  <option>SK Glamour Nails</option>
+  <option>Negocio Colaborador</option>
 </select>
 
 <button onclick="agregarCita()">Registrar</button>
 
 <table>
 <tr>
-<th>Cliente</th>
-<th>Servicio</th>
-<th>Fecha</th>
-<th>Hora</th>
-<th>Lugar</th>
-<th>Eliminar</th>
+  <th>Cliente</th>
+  <th>Servicio</th>
+  <th>Fecha</th>
+  <th>Hora</th>
+  <th>Lugar</th>
+  <th>Eliminar</th>
 </tr>
 <tbody id="tablaCitas"></tbody>
 </table>
-
 </div>
 </section>
 
+<!-- PAGOS: ahora solo accesible desde el panel manicurista -->
 <section id="pagos">
 <div class="card">
-
 <h2>Pagos</h2>
 
 <input id="clientePago" placeholder="Cliente">
 <input id="montoPago" placeholder="Monto" type="number">
-
 <select id="tipoIngreso">
-<option>SK Glamour Nails</option>
-<option>Negocio Colaborador</option>
+  <option>SK Glamour Nails</option>
+  <option>Negocio Colaborador</option>
 </select>
 
 <button onclick="agregarPago()">Registrar</button>
 
 <table>
 <tr>
-<th>Cliente</th>
-<th>Monto</th>
-<th>Tipo</th>
-<th>Eliminar</th>
+  <th>Cliente</th>
+  <th>Monto</th>
+  <th>Realizado por</th>
+  <th>Eliminar</th>
 </tr>
 <tbody id="tablaPagos"></tbody>
 </table>
-
 </div>
 </section>
 
 <section id="reportes">
 <div class="card">
-
 <h2>Reportes</h2>
-
 <p>Total Clientes: <span id="totalClientes">0</span></p>
 <p>Total Citas: <span id="totalCitas">0</span></p>
-
 </div>
 </section>
 
 <section id="login">
 <div class="card">
-
 <h2>Acceso Manicurista</h2>
-
 <input id="usuario" placeholder="Usuario">
 <input type="password" id="clave" placeholder="Contraseña">
-
 <button onclick="login()">Entrar</button>
-
 </div>
 </section>
 
-<section id="inventario">
+<!-- PANEL MANICURISTA: inventario + pagos juntos -->
+<section id="panelManicurista">
 <div class="card">
 
-<h2>Inventario</h2>
+  <h2>Panel Manicurista</h2>
 
-<input id="productoInventario" placeholder="Producto">
-<input id="cantidadInventario" placeholder="Cantidad" type="number">
+  <!-- Sub-nav del panel -->
+  <div style="margin-bottom:20px;">
+    <button onclick="mostrarPanel('inventarioPanel')">Inventario</button>
+    <button onclick="mostrarPanel('pagosPanel')">Pagos</button>
+  </div>
 
-<button onclick="agregarInventario()">Agregar</button>
+  <!-- Inventario -->
+  <div id="inventarioPanel">
+    <h3>Inventario</h3>
+    <input id="productoInventario" placeholder="Producto">
+    <input id="cantidadInventario" placeholder="Cantidad" type="number">
+    <button onclick="agregarInventario()">Agregar</button>
+    <table>
+    <tr>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Eliminar</th>
+    </tr>
+    <tbody id="tablaInventario"></tbody>
+    </table>
+  </div>
 
-<table>
-<tr>
-<th>Producto</th>
-<th>Cantidad</th>
-<th>Eliminar</th>
-</tr>
-<tbody id="tablaInventario"></tbody>
-</table>
+  <!-- Pagos (duplicado de contenido, gestionado por JS) -->
+  <div id="pagosPanel" style="display:none;">
+    <h3>Pagos</h3>
+    <input id="clientePago2" placeholder="Cliente">
+    <input id="montoPago2" placeholder="Monto" type="number">
+    <select id="tipoIngreso2">
+      <option>SK Glamour Nails</option>
+      <option>Negocio Colaborador</option>
+    </select>
+    <button onclick="agregarPago2()">Registrar</button>
+    <table>
+    <tr>
+      <th>Cliente</th>
+      <th>Monto</th>
+      <th>Realizado por</th>
+      <th>Eliminar</th>
+    </tr>
+    <tbody id="tablaPagos2"></tbody>
+    </table>
+  </div>
 
 </div>
 </section>
 
 <section id="contacto">
 <div class="card">
-
 <h2>Contáctanos</h2>
-
 <p>WhatsApp: 3148370303</p>
 <p>WhatsApp: 3052094533</p>
 <p>Correo: Skglamournls@email.com</p>
 <p>Instagram: @skglamour_nails</p>
-
 </div>
 </section>
 
 <script src="js/scripts.js"></script>
-
 </body>
 </html>
