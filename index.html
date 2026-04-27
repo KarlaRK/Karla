@@ -179,13 +179,23 @@
   <!-- Inventario -->
   <div id="inventarioPanel">
     <h3>Inventario</h3>
-    <input id="productoInventario" placeholder="Producto">
+    <input id="productoInventario" placeholder="Nombre">
     <input id="cantidadInventario" placeholder="Cantidad" type="number">
+    <input id="propietarioInventario" placeholder="Propietario">
+    <select id="estadoInventario">
+      <option value="">-- Estado --</option>
+      <option>Disponible</option>
+      <option>En uso</option>
+      <option>Agotado</option>
+      <option>Por reponer</option>
+    </select>
     <button onclick="agregarInventario()">Agregar</button>
     <table>
     <tr>
-      <th>Producto</th>
+      <th>Nombre</th>
       <th>Cantidad</th>
+      <th>Propietario</th>
+      <th>Estado</th>
       <th>Eliminar</th>
     </tr>
     <tbody id="tablaInventario"></tbody>

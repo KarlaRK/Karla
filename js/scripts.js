@@ -81,14 +81,18 @@ function agregarPago2() {
 function agregarInventario() {
   let producto = document.getElementById("productoInventario").value.trim()
   let cantidad = document.getElementById("cantidadInventario").value.trim()
+  let propietario = document.getElementById("propietarioInventario").value.trim()
+  let estado = document.getElementById("estadoInventario").value
 
-  if (!producto || !cantidad) {
+  if (!producto || !cantidad || !propietario || !estado) {
     alert("Por favor completa todos los campos del inventario.")
     return
   }
-  inventario.push({ producto, cantidad })
+  inventario.push({ producto, cantidad, propietario, estado })
   document.getElementById("productoInventario").value = ""
   document.getElementById("cantidadInventario").value = ""
+  document.getElementById("propietarioInventario").value = ""
+  document.getElementById("estadoInventario").value = ""
   guardar()
   render()
 }
@@ -153,6 +157,8 @@ function render() {
     ti.innerHTML += `<tr>
       <td>${item.producto}</td>
       <td>${item.cantidad}</td>
+      <td>${item.propietario || "—"}</td>
+      <td>${item.estado || "—"}</td>
       <td><button onclick="eliminar('inventario',${i})">Eliminar</button></td>
     </tr>`
   })
