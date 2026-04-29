@@ -1,155 +1,289 @@
-let clientes = JSON.parse(localStorage.getItem("clientes")) || []
-let citas = JSON.parse(localStorage.getItem("citas")) || []
-let pagos = JSON.parse(localStorage.getItem("pagos")) || []
-let inventario = JSON.parse(localStorage.getItem("inventario")) || []
-let manicuristaLogueada = false
+// ============================================================
+//  SK Glamour Nails — js/scripts.js  (conectado a PHP/MySQL)
+// ============================================================
 
+const API = 'api';          // relativo: misma carpeta del servidor
+let usuarioId = null;       // se llena al hacer login
+
+// ── Navegación ────────────────────────────────────────────────
 function mostrar(id) {
-  document.querySelectorAll("section").forEach(s => {
-    s.classList.remove("activo")
-  })
-  document.getElementById(id).classList.add("activo")
+    document.querySelectorAll('section').forEach(s => s.classList.remove('activo'));
+    document.getElementById(id).classList.add('activo');
+    if (id === 'reportes') cargarReportes();
 }
 
-function guardar() {
-  localStorage.setItem("clientes", JSON.stringify(clientes))
-  localStorage.setItem("citas", JSON.stringify(citas))
-  localStorage.setItem("pagos", JSON.stringify(pagos))
-  localStorage.setItem("inventario", JSON.stringify(inventario))
+function mostrarPanel(id) {
+    document.getElementById('inventarioPanel').style.display = 'none';
+    document.getElementById('pagosPanel').style.display      = 'none';
+    document.getElementById(id).style.display = 'block';
 }
 
-function agregarCliente() {
-  let nombre = document.getElementById("nombreCliente").value
-  let telefono = document.getElementById("telefonoCliente").value
-  if (!nombre || !telefono) return
-  clientes.push({ nombre, telefono })
-  document.getElementById("nombreCliente").value = ""
-  document.getElementById("telefonoCliente").value = ""
-  guardar()
-  render()
+// ── Fetch helper ──────────────────────────────────────────────
+async function api(path, method = 'GET', body = null) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    try {
+        const res  = await fetch(`${API}/${path}`, opts);
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error || 'Error desconocido');
+        return json.data;
+    } catch (e) {
+        alert('Error: ' + e.message);
+        throw e;
+    }
 }
 
-function agregarCita() {
-  let cliente = document.getElementById("clienteCita").value
-  let servicio = document.getElementById("servicioCita").value
-  let fecha = document.getElementById("fechaCita").value
-  let hora = document.getElementById("horaCita").value
-  let lugar = document.getElementById("lugarCita").value
-  if (!cliente || !fecha || !hora) return
-  citas.push({ cliente, servicio, fecha, hora, lugar })
-  document.getElementById("clienteCita").value = ""
-  document.getElementById("fechaCita").value = ""
-  document.getElementById("horaCita").value = ""
-  guardar()
-  render()
+// ──────────────────────────────────────────────────────────────
+//  CLIENTES
+// ──────────────────────────────────────────────────────────────
+async function cargarClientes() {
+    const clientes = await api('clientes');
+    const tb = document.getElementById('tablaClientes');
+    tb.innerHTML = clientes.map(c => `
+        <tr>
+            <td>${c.nombre}</td>
+            <td>${c.telefono}</td>
+            <td>${c.lugar}</td>
+            <td><button onclick="eliminarCliente(${c.id})">Eliminar</button></td>
+        </tr>`).join('');
+    document.getElementById('totalClientes').innerText = clientes.length;
 }
 
-function agregarPago() {
-  let cliente = document.getElementById("clientePago").value
-  let monto = document.getElementById("montoPago").value
-  let tipo = document.getElementById("tipoIngreso").value
-  if (!cliente || !monto) return
-  pagos.push({ cliente, monto: parseInt(monto), tipo })
-  document.getElementById("clientePago").value = ""
-  document.getElementById("montoPago").value = ""
-  guardar()
-  render()
+async function agregarCliente() {
+    const nombre   = document.getElementById('nombreCliente').value.trim();
+    const telefono = document.getElementById('telefonoCliente').value.trim();
+    const lugar_id = document.getElementById('lugarCliente').value;
+    if (!nombre || !telefono || !lugar_id) return alert('Completa todos los campos.');
+    await api('clientes', 'POST', { nombre, telefono, lugar_id: +lugar_id });
+    document.getElementById('nombreCliente').value   = '';
+    document.getElementById('telefonoCliente').value = '';
+    document.getElementById('lugarCliente').value    = '';
+    cargarClientes();
 }
 
-function agregarInventario() {
-  let producto = document.getElementById("productoInventario").value
-  let cantidad = document.getElementById("cantidadInventario").value
-  if (!producto || !cantidad) return
-  inventario.push({ producto, cantidad })
-  document.getElementById("productoInventario").value = ""
-  document.getElementById("cantidadInventario").value = ""
-  guardar()
-  render()
+async function eliminarCliente(id) {
+    if (!confirm('¿Eliminar cliente?')) return;
+    await api(`clientes/${id}`, 'DELETE');
+    cargarClientes();
 }
 
-function eliminar(tipo, index) {
-  if (!manicuristaLogueada) return
-  if (tipo == "cliente") clientes.splice(index, 1)
-  if (tipo == "cita") citas.splice(index, 1)
-  if (tipo == "pago") pagos.splice(index, 1)
-  if (tipo == "inventario") inventario.splice(index, 1)
-  guardar()
-  render()
+// ──────────────────────────────────────────────────────────────
+//  CITAS
+// ──────────────────────────────────────────────────────────────
+async function cargarCitas() {
+    const citas = await api('citas');
+    const tb = document.getElementById('tablaCitas');
+    const estados = ['pendiente','confirmada','completada','cancelada'];
+    tb.innerHTML = citas.map(c => `
+        <tr>
+            <td>${c.cliente}</td>
+            <td>${c.servicio}</td>
+            <td>${c.fecha}</td>
+            <td>${c.hora}</td>
+            <td>${c.lugar}</td>
+            <td>
+                <select onchange="cambiarEstadoCita(${c.id}, this.value)">
+                    ${estados.map(e =>
+                        `<option ${e === c.estado ? 'selected' : ''}>${e}</option>`
+                    ).join('')}
+                </select>
+            </td>
+            <td><button onclick="eliminarCita(${c.id})">Eliminar</button></td>
+        </tr>`).join('');
+    document.getElementById('totalCitas').innerText = citas.length;
 }
 
-function render() {
-  // Clientes
-  let tc = document.getElementById("tablaClientes")
-  tc.innerHTML = ""
-  clientes.forEach((c, i) => {
-    tc.innerHTML += `<tr>
-      <td>${c.nombre}</td>
-      <td>${c.telefono}</td>
-      ${manicuristaLogueada ? `<td><button onclick="eliminar('cliente',${i})">Eliminar</button></td>` : '<td>—</td>'}
-    </tr>`
-  })
-
-  // Citas
-  let tci = document.getElementById("tablaCitas")
-  tci.innerHTML = ""
-  citas.forEach((c, i) => {
-    tci.innerHTML += `<tr>
-      <td>${c.cliente}</td>
-      <td>${c.servicio}</td>
-      <td>${c.fecha}</td>
-      <td>${c.hora}</td>
-      <td>${c.lugar}</td>
-      ${manicuristaLogueada ? `<td><button onclick="eliminar('cita',${i})">Eliminar</button></td>` : '<td>—</td>'}
-    </tr>`
-  })
-
-  // Pagos
-  let tp = document.getElementById("tablaPagos")
-  tp.innerHTML = ""
-  pagos.forEach((p, i) => {
-    tp.innerHTML += `<tr>
-      <td>${p.cliente}</td>
-      <td>$${p.monto}</td>
-      <td>${p.tipo}</td>
-      <td><button onclick="eliminar('pago',${i})">Eliminar</button></td>
-    </tr>`
-  })
-
-  // Inventario
-  let ti = document.getElementById("tablaInventario")
-  ti.innerHTML = ""
-  inventario.forEach((item, i) => {
-    ti.innerHTML += `<tr>
-      <td>${item.producto}</td>
-      <td>${item.cantidad}</td>
-      <td><button onclick="eliminar('inventario',${i})">Eliminar</button></td>
-    </tr>`
-  })
-
-  // Reportes
-  document.getElementById("totalClientes").innerText = clientes.length
-  document.getElementById("totalCitas").innerText = citas.length
+async function agregarCita() {
+    const cliente_id  = document.getElementById('clienteCita').value;
+    const servicio_id = document.getElementById('servicioCita').value;
+    const fecha       = document.getElementById('fechaCita').value;
+    const hora        = document.getElementById('horaCita').value;
+    const lugar_id    = document.getElementById('lugarCita').value;
+    if (!cliente_id || !fecha || !hora) return alert('Completa todos los campos.');
+    await api('citas', 'POST', {
+        cliente_id: +cliente_id, servicio_id: +servicio_id,
+        lugar_id: +lugar_id, fecha, hora
+    });
+    document.getElementById('fechaCita').value = '';
+    document.getElementById('horaCita').value  = '';
+    cargarCitas();
 }
 
-function actualizarBotonesNav() {
-  document.getElementById("btnPagos").style.display = manicuristaLogueada ? "inline-block" : "none"
-  document.getElementById("btnReportes").style.display = manicuristaLogueada ? "inline-block" : "none"
+async function cambiarEstadoCita(id, estado) {
+    await api(`citas/${id}/estado`, 'PATCH', { estado });
 }
 
-function login() {
-  let usuario = document.getElementById("usuario").value
-  let clave = document.getElementById("clave").value
-
-  if (usuario == "manicurista" && clave == "1234") {
-    manicuristaLogueada = true
-    alert("Bienvenida Manicurista")
-    actualizarBotonesNav()
-    render()
-    mostrar("inventario")
-  } else {
-    alert("Datos incorrectos")
-  }
+async function eliminarCita(id) {
+    if (!confirm('¿Eliminar cita?')) return;
+    await api(`citas/${id}`, 'DELETE');
+    cargarCitas();
 }
 
-actualizarBotonesNav()
-render()
+// ──────────────────────────────────────────────────────────────
+//  PAGOS
+// ──────────────────────────────────────────────────────────────
+async function cargarPagos() {
+    const pagos = await api('pagos');
+    const tb = document.getElementById('tablaPagos2');
+    if (!tb) return;
+    tb.innerHTML = pagos.map(p => `
+        <tr>
+            <td>${p.cliente}</td>
+            <td>$${Number(p.monto).toLocaleString()}</td>
+            <td>${p.metodo_pago}</td>
+            <td>${p.lugar}</td>
+            <td>${p.registrado_por}</td>
+            <td><button onclick="eliminarPago(${p.id})">Eliminar</button></td>
+        </tr>`).join('');
+}
+
+async function agregarPago2() {
+    const cliente_id  = document.getElementById('clientePago2').value;
+    const monto       = parseFloat(document.getElementById('montoPago2').value);
+    const lugar_id    = document.getElementById('tipoIngreso2').value;
+    const metodo_pago = document.getElementById('metodoPago2')?.value || 'efectivo';
+    if (!cliente_id || isNaN(monto) || monto <= 0) return alert('Completa todos los campos.');
+    await api('pagos', 'POST', {
+        cliente_id: +cliente_id, lugar_id: +lugar_id,
+        monto, metodo_pago, registrado_por: usuarioId
+    });
+    document.getElementById('montoPago2').value = '';
+    cargarPagos();
+}
+
+async function eliminarPago(id) {
+    if (!confirm('¿Eliminar pago?')) return;
+    await api(`pagos/${id}`, 'DELETE');
+    cargarPagos();
+}
+
+// ──────────────────────────────────────────────────────────────
+//  INVENTARIO
+// ──────────────────────────────────────────────────────────────
+async function cargarInventario() {
+    const items = await api('inventario');
+    const tb = document.getElementById('tablaInventario');
+    tb.innerHTML = items.map(i => `
+        <tr>
+            <td>${i.producto}</td>
+            <td>${i.cantidad}</td>
+            <td>${i.propietario}</td>
+            <td>${i.estado}</td>
+            <td><button onclick="eliminarInventario(${i.id})">Eliminar</button></td>
+        </tr>`).join('');
+}
+
+async function agregarInventario() {
+    const producto    = document.getElementById('productoInventario').value.trim();
+    const cantidad    = +document.getElementById('cantidadInventario').value;
+    const propietario = document.getElementById('propietarioInventario').value.trim();
+    const estado      = document.getElementById('estadoInventario').value;
+    if (!producto || !propietario || !estado) return alert('Completa todos los campos.');
+    await api('inventario', 'POST', { producto, cantidad, propietario, estado });
+    document.getElementById('productoInventario').value   = '';
+    document.getElementById('cantidadInventario').value   = '';
+    document.getElementById('propietarioInventario').value = '';
+    document.getElementById('estadoInventario').value     = '';
+    cargarInventario();
+}
+
+async function eliminarInventario(id) {
+    if (!confirm('¿Eliminar item?')) return;
+    await api(`inventario/${id}`, 'DELETE');
+    cargarInventario();
+}
+
+// ──────────────────────────────────────────────────────────────
+//  REPORTES
+// ──────────────────────────────────────────────────────────────
+async function cargarReportes() {
+    const { summary, porLugar, porServicio } = await api('reportes');
+
+    document.getElementById('totalClientes').innerText   = summary.total_clientes;
+    document.getElementById('totalCitas').innerText      = summary.total_citas;
+
+    // Campos extra (agrega los spans en index.html si los quieres mostrar)
+    const elPend = document.getElementById('citasPendientes');
+    if (elPend) elPend.innerText = summary.citas_pendientes;
+    const elIng = document.getElementById('ingresosTotal');
+    if (elIng) elIng.innerText = '$' + Number(summary.ingresos_totales).toLocaleString();
+    const elAgo = document.getElementById('itemsAgotados');
+    if (elAgo) elAgo.innerText = summary.items_agotados;
+
+    const tl = document.getElementById('tablaLugares');
+    if (tl) tl.innerHTML = porLugar.map(r =>
+        `<tr><td>${r.lugar}</td><td>$${Number(r.total).toLocaleString()}</td></tr>`
+    ).join('');
+
+    const ts = document.getElementById('tablaServicios');
+    if (ts) ts.innerHTML = porServicio.map(r =>
+        `<tr><td>${r.servicio}</td><td>${r.total}</td></tr>`
+    ).join('');
+}
+
+// ──────────────────────────────────────────────────────────────
+//  SELECTS DINÁMICOS (cargados desde la BD)
+// ──────────────────────────────────────────────────────────────
+async function cargarSelects() {
+    const [lugares, servicios, clientes] = await Promise.all([
+        api('lugares'), api('servicios'), api('clientes')
+    ]);
+
+    // Lugar del cliente
+    document.getElementById('lugarCliente').innerHTML =
+        '<option value="">-- Lugar del servicio --</option>' +
+        lugares.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
+
+    // Servicio de la cita
+    document.getElementById('servicioCita').innerHTML =
+        servicios.map(s => `<option value="${s.id}">${s.nombre}</option>`).join('');
+
+    // Lugar de la cita
+    document.getElementById('lugarCita').innerHTML =
+        lugares.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
+
+    // Cliente de la cita
+    const selCita = document.getElementById('clienteCita');
+    selCita.outerHTML = selCita.outerHTML.replace('<input', '<select').replace('>', '>');
+    // Si es select (ya cambiado en HTML):
+    if (document.getElementById('clienteCita').tagName === 'SELECT') {
+        document.getElementById('clienteCita').innerHTML =
+            '<option value="">-- Cliente --</option>' +
+            clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+    }
+
+    // Lugar de pagos
+    document.getElementById('tipoIngreso2').innerHTML =
+        lugares.map(l => `<option value="${l.id}">${l.nombre}</option>`).join('');
+
+    // Cliente de pagos
+    const selPago = document.getElementById('clientePago2');
+    if (selPago && selPago.tagName === 'SELECT') {
+        selPago.innerHTML =
+            '<option value="">-- Cliente --</option>' +
+            clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+    }
+}
+
+// ──────────────────────────────────────────────────────────────
+//  LOGIN
+// ──────────────────────────────────────────────────────────────
+async function login() {
+    const usuario = document.getElementById('usuario').value.trim();
+    const clave   = document.getElementById('clave').value;
+    if (!usuario || !clave) return alert('Ingresa usuario y contraseña.');
+    const data = await api('login', 'POST', { usuario, clave });
+    usuarioId = data.id;
+    alert(`¡Bienvenida ${data.nombre}! 💅`);
+    mostrar('panelManicurista');
+    mostrarPanel('inventarioPanel');
+    cargarInventario();
+    cargarPagos();
+}
+
+// ── Init ──────────────────────────────────────────────────────
+(async () => {
+    await cargarSelects();
+    cargarClientes();
+    cargarCitas();
+})();
