@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>SK Glamour Nails</title>
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/styles.css?v=2">
 </head>
 
 <body>
@@ -91,7 +91,7 @@
 <div class="card">
 <h2>Registrar Cita</h2>
 
-<input id="clienteCita" placeholder="Cliente">
+<select id="clienteCita"><option value="">-- Cliente --</option></select>
 <select id="servicioCita">
   <option>Manicure</option>
   <option>Pedicure</option>
@@ -205,7 +205,7 @@
   <!-- Pagos (duplicado de contenido, gestionado por JS) -->
   <div id="pagosPanel" style="display:none;">
     <h3>Pagos</h3>
-    <input id="clientePago2" placeholder="Cliente">
+    <select id="clientePago2"><option value="">-- Cliente --</option></select>
     <input id="montoPago2" placeholder="Monto" type="number">
     <select id="tipoIngreso2">
       <option>SK Glamour Nails</option>
